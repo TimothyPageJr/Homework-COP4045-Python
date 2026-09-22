@@ -1,0 +1,91 @@
+1. def line_number(input_filename: str, output_filename: str) -> None:
+2.     """Read a text file and write its lines prefixed with line numbers."""
+3.     try:
+4.         with open(input_filename, "r", encoding="utf-8") as input_file:
+5.             with open(output_filename, "w", encoding="utf-8") as output_file:
+6.                 for number, line in enumerate(input_file, start=1):
+7.                     output_file.write(f"{number}. {line}")
+8.     except Exception as error:
+9.         print(f"Error processing the file: {error}")
+10.         raise
+11. 
+12. 
+13. def parse_functions(filename: str) -> tuple:
+14.     """Parse functions from a Python file and return their information."""
+15.     try:
+16.         with open(filename, "r", encoding="utf-8") as file:
+17.             lines = file.readlines()
+18. 
+19.         functions = []
+20. 
+21.         for index, line in enumerate(lines):
+22.             stripped_line = line.strip()
+23. 
+24.             # Look only for top-level function definitions.
+25.             if line.startswith("def "):
+26.                 function_name = stripped_line.split("def ", 1)[1].split("(", 1)[0]
+27. 
+28.                 arguments = (
+29.                     stripped_line.split("(", 1)[1]
+30.                     .split(")", 1)[0]
+31.                 )
+32. 
+33.                 code_lines = [line]
+34.                 next_index = index + 1
+35. 
+36.                 
+37.                 while next_index < len(lines):
+38.                     next_line = lines[next_index]
+39.                     next_stripped = next_line.strip()
+40. 
+41.                     
+42.                     if (
+43.                         next_stripped
+44.                         and not next_stripped.startswith("#")
+45.                         and not next_line.startswith((" ", "\t"))
+46.                     ):
+47.                         break
+48. 
+49.                     
+50.                     if next_stripped and not next_stripped.startswith("#"):
+51.                         code_lines.append(next_line)
+52. 
+53.                     next_index += 1
+54. 
+55.                 function_code = "".join(code_lines)
+56. 
+57.                 functions.append(
+58.                     (
+59.                         index + 1,
+60.                         function_name,
+61.                         arguments,
+62.                         function_code,
+63.                     )
+64.                 )
+65. 
+66.         # Sort alphabetically by function name.
+67.         functions.sort(key=lambda item: item[1])
+68. 
+69.         return tuple(functions)
+70. 
+71.     except Exception as error:
+72.         print(f"Error processing the file: {error}")
+73.         raise
+74. 
+75. 
+76. def main() -> None:
+77.     """Test line_number and parse_functions."""
+78.     source_file = "p1_Page_Timothy.py"
+79.     numbered_file = "p1_Page_Timothy.py.txt"
+80. 
+81.     line_number(source_file, numbered_file)
+82. 
+83.     parsed_functions = parse_functions(source_file)
+84. 
+85.     print("Parsed functions:")
+86.     for function in parsed_functions:
+87.         print(function)
+88. 
+89. 
+90. if __name__ == "__main__":
+91.     main()
